@@ -197,3 +197,23 @@ void crissCross(){
     cross=false;
   }
 }
+
+// Scrolling square
+int offsetX;
+int offsetY;
+void scrollingSquare(){
+  if(effectInit == false){
+    effectInit = true;
+    effectDelay = 500;
+    offsetX = 0;
+    offsetY = 0;
+  }
+  clean();
+  for(int x=offsetX ; x<2+offsetX ; x++){
+    for(int y=offsetY ; y<2+offsetY ; y++){
+      leds[XY(x,y)] = CHSV(200,255,255);
+    }
+  }
+  offsetX = (offsetX + 1)%16;
+  offsetY = (offsetY + 1)%5;
+}
