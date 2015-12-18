@@ -6,7 +6,11 @@
 //    * All animation should be controlled with counters and effectDelay, no delay() or loops
 //    * Pixel data should be written using leds[XY(x,y)] to map coordinates to the RGB Shades layout
 
-
+// Defines
+#define BRIGHTER 0  // For the heart and scrollingHeart effects
+#define DIMMER 1    // For the heart and scrollingHeart effects
+#define INCREASE 0  // For the equalizer effect
+#define DECREASE 1  // For the equalizer effect
 void clean(){
   for(int x=0 ; x<kMatrixWidth ; x++){
     for(int y=0 ; y<kMatrixHeight ; y++){
@@ -16,8 +20,7 @@ void clean(){
 }
 
 // RGB Heart
-#define BRIGHTER 0
-#define DIMMER 1
+// Defines of DIMMER and BRIGHTER in the top of the file
 int change = DIMMER;
 int brightness = 5;
 int lux[] = {30,60,100,150,200,255};
@@ -40,8 +43,7 @@ void heart(){
 }
 
 // Equalizer
-#define INCREASE 0
-#define DECREASE 1
+// Defines of INCREASE and DECREASE in top of file
 int YOffset = kMatrixWidth;
 int dir = INCREASE;
 void equalizer(){
@@ -280,4 +282,44 @@ void scrollingSquare(){
   }
   offsetX = (offsetX + 1)%16;
   offsetY = (offsetY + 1)%5;
+}
+
+
+// Srolling an advanced shape
+void scroller(int xOff,int yOff, int * xLED, int * yLED, int arrLen){
+  for(int i=0 ; i<arrLen ; i++){
+    xLED[i] = (xLED[i]+xOff)%16;
+    yLED[i] = (yLED[i]+yOff)%5;
+  }
+}
+
+// Defines of DIMMER and BRIGHTER in the top of the file
+
+/*
+ * I had to change some variable names to make this work. Sorry about
+ * that guys. Such is life with global variables.
+ */
+int scrollChange = DIMMER;
+int scrollBrightness = 5;
+int scrollLux[] = {30,60,100,150,200,255};
+int xLED[] = {2,4,1,2,3,4,5,2,3,4,3,12,11,12,13,10,11,12,13,14,11,13};
+int yLED[] = {1,1,2,2,2,2,2,3,3,3,4,4, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1};
+
+int nrLEDs = 22;
+
+void scrollingHeart(){
+  if (effectInit == false) {
+    effectInit = true;
+    effectDelay = 500;
+  }
+  clean();
+  if(scrollChange == BRIGHTER) scrollBrightness++;
+  else scrollBrightness--;
+  if(scrollBrightness >= 5) scrollChange = DIMMER;
+  else if(scrollBrightness <= 0) scrollChange = BRIGHTER;
+  for(int i=0 ; i<nrLEDs ; i++){
+    int led = XY(xLED[i],yLED[i]);
+    leds[led] = CHSV(0,255,scrollLux[scrollBrightness]);
+  }
+  scroller(1,1,xLED,yLED,nrLEDs);
 }
