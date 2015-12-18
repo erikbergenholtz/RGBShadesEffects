@@ -198,6 +198,70 @@ void crissCross(){
   }
 }
 
+// Matrix
+
+int xHeight[16];
+void matrix(){
+  if(effectInit == false){
+    effectInit = true;
+    effectDelay = 100;
+    for(int i=0 ; i<kMatrixWidth ; i++){
+      xHeight[i] = rand()%10+4*-1;
+    }
+  }
+  clean();
+  int color = 100;
+  for(int x=0 ; x<kMatrixWidth ; x++){
+    for(int y=0 ; y<kMatrixWidth ; y++){
+      if(y==xHeight[x])
+        leds[XY(x,y)] = CHSV(color,255, 255);
+      else if(y<xHeight[x]){
+        int brightness = 255-((xHeight[x]-y)*50);
+        if(brightness < 30)
+          brightness = 0;
+        leds[XY(x,y)] = CHSV(color,255,brightness);
+      }
+    }
+    xHeight[x]++;
+    if(xHeight[x] > 9)
+      xHeight[x] = rand()%10+4*-1;
+  }
+}
+
+// EKG
+int ekgX;
+void ekg(){
+  if(effectInit == false){
+    effectInit = true;
+    effectDelay = 20;
+    ekgX=0;
+  }
+  clean();
+  int color = 100;
+  for(int x=0 ; x<kMatrixWidth ; x++){
+    for(int y=0 ; y<kMatrixHeight ; y++){
+      if(x<=ekgX && x>=ekgX-5){
+        int brightness = 255-((ekgX-x)*30);
+        if(x==2 || x==11){
+          if(y==3)
+            leds[XY(x,y)] = CHSV(color,255,brightness);
+        }else if(x==4 || x==13){
+          if(y==1)
+            leds[XY(x,y)] = CHSV(color,255,brightness);
+        }else{
+          if(y==2){
+            if(brightness<50) brightness=0;
+            leds[XY(x,y)] = CHSV(color,255,brightness);
+          }
+        }
+      }
+    }
+  }
+  ekgX++;
+  if(ekgX == 100)
+    ekgX = 0;
+}
+
 // Scrolling square
 int offsetX;
 int offsetY;
