@@ -11,6 +11,7 @@
 #define DIMMER 1    // For the heart and scrollingHeart effects
 #define INCREASE 0  // For the equalizer effect
 #define DECREASE 1  // For the equalizer effect
+
 void clean(){
   for(int x=0 ; x<kMatrixWidth ; x++){
     for(int y=0 ; y<kMatrixHeight ; y++){
@@ -28,8 +29,8 @@ void heart(){
   if (effectInit == false) {
     effectInit = true;
     effectDelay = 50;
-    clean();
   }
+  clean();
   if(change == BRIGHTER) brightness++;
   else brightness--;
   if(brightness >= 5) change = DIMMER;
@@ -142,6 +143,7 @@ void cyclops(){
     effectDelay = 58;
     R=G=B=0;
   }
+  clean();
   if(direction==RIGHT) XOffset++;
   else XOffset--;
   if(XOffset==kMatrixWidth) direction = LEFT;
@@ -153,8 +155,6 @@ void cyclops(){
     for(int y=0;y<kMatrixHeight ; y++){
       if(x==XOffset)
         leds[XY(x,y)] = CRGB(R,G,B);
-      else
-        leds[XY(x,y)] = CRGB(0,0,0);
     }
   }
 }
@@ -286,10 +286,12 @@ void scrollingSquare(){
 
 
 // Srolling an advanced shape
-void scroller(int xOff,int yOff, int * xLED, int * yLED, int arrLen){
+void scroller(int xOff,int yOff, int * xLED, int * yLED, int arrLen,int width, int height){
   for(int i=0 ; i<arrLen ; i++){
-    xLED[i] = (xLED[i]+xOff)%16;
-    yLED[i] = (yLED[i]+yOff)%5;
+    xLED[i] = (xLED[i]+xOff)%width;
+    if(xLED[i]<0) xLED[i] = width+xLED[i];
+    yLED[i] = (yLED[i]+yOff)%height;
+    if(yLED[i]<0) yLED[i] = height+yLED[i];
   }
 }
 
@@ -299,19 +301,18 @@ void scroller(int xOff,int yOff, int * xLED, int * yLED, int arrLen){
  * I had to change some variable names to make this work. Sorry about
  * that guys. Such is life with global variables.
  */
+ 
 int scrollChange = DIMMER;
 int scrollBrightness = 5;
-int scrollLux[] = {30,60,100,150,200,255};
 int xLED[] = {2,4,1,2,3,4,5,2,3,4,3,12,11,12,13,10,11,12,13,14,11,13};
 int yLED[] = {1,1,2,2,2,2,2,3,3,3,4,4, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1};
-
-int nrLEDs = 22;
-
 void scrollingHeart(){
   if (effectInit == false) {
     effectInit = true;
     effectDelay = 500;
   }
+  int scrollLux[] = {30,60,100,150,200,255};
+  int nrLEDs = 22;
   clean();
   if(scrollChange == BRIGHTER) scrollBrightness++;
   else scrollBrightness--;
@@ -322,4 +323,35 @@ void scrollingHeart(){
     leds[led] = CHSV(0,255,scrollLux[scrollBrightness]);
   }
   scroller(1,1,xLED,yLED,nrLEDs);
+}
+
+//Class to store colors in the RGB format
+class color{
+  public:
+    byte r=0;
+    byte g=0;
+    byte b=0;
+    color(byte _r,byte _g,byte _b){
+      this->r = _r;
+      this->g = _g;
+      this->b = _b;
+    }
+};
+
+int xCoords[] = {0,0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,6,6,6,6,6,6,9,9,9,9,9,9,10,10,10,10,10,10,10,11,11,11,11,11,11,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,12,12,13,13,13,13,13,13,13,13,13,13,13,13,14,14,14,14,14,14,14,15,15,15,15,15,15};
+int yCoords[] = {1,2,3,7,12,17,0,4,6,8,12,16,18,0,1,2,3,4,6,7,8,12,16,17,18,0,1,2,3,4,6,7,8,12,16,17,18,0,1,2,3,4,6,7,8,12,16,17,18,0,4,6,8,12,16,18,1,2,3,7,12,17,1,2,3,7,12,17,0,4,6,8,12,16,18,0,1,2,3,4,6,7,8,12,16,17,18,0,1,2,3,4,6,7,8,12,16,17,18,0,1,2,3,4,6,7,8,12,16,17,18,0,4,6,8,12,16,18,1,2,3,7,12,17};
+void eyes(){
+        if(!effectInit){
+                effectInit = true;
+                effectDelay = 350;
+        }
+        clean();
+        color c[] = {color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(255, 0, 110),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(255, 0, 110),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(255, 0, 110),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(255, 0, 110),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(255, 0, 110),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127),color(0, 19, 127)};
+        int nrOfLEDs = 124;
+        int aniWidth = 16;
+        int aniHeight = 20;
+        for(int i=0 ; i<nrOfLEDs ; i++){
+                leds[XY(xCoords[i],yCoords[i])] = CRGB(c[i].r,c[i].g,c[i].b);
+        }
+        scroller(0,-5,xCoords,yCoords,nrOfLEDs,aniWidth,aniHeight);
 }
